@@ -4,7 +4,7 @@ The idea for this project is to create a simple profile based web application.
 
 TODO:
 * Login:
-    + Check if user exists.
+    + ~~Check if user exists.~~
 
 * Register:
     + Add check for username (has letters, maybe few numbers).
@@ -20,8 +20,10 @@ TODO:
 
 DONE:
 * Login:
+    + Check if user exists.
 
 * Register:
     + Can create an account.
 
 * Profile options to add:
+    + Display logged in email.

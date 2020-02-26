@@ -13,17 +13,12 @@ public class UserDAOImpl implements UserDAO{
         String username = user.getUsername();
         String password = user.getPassword();
 
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
         try{
-            connection = DatabaseUtil.createConnection();
-            String query = "INSERT INTO users (user_username, user_email, user_password) VALUES (?, ?, ?)"; // details to insert into USERS table
-            if(connection != null){
-            }
-            System.out.println("WORKING");
+            Connection connection = DatabaseUtil.createConnection();
 
-            preparedStatement = connection.prepareStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO users (user_username, user_email, user_password) VALUES (?, ?, ?)"
+            );
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, password);
@@ -43,14 +38,15 @@ public class UserDAOImpl implements UserDAO{
 
     @Override
     public boolean userExists(String username) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
         try{
-            connection = DatabaseUtil.createConnection();
-            String query = "SELECT * FROM Users user_username=?";
-            preparedStatement = connection.prepareStatement(query);
+            Connection connection = DatabaseUtil.createConnection();
+
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM Users user_username=?"
+            );
             preparedStatement.setString(1, username);
+
+            connection.close();
         }catch (SQLException ex){
             ex.printStackTrace();
         }

@@ -12,7 +12,6 @@
 </head>
 <body>
 <div style="text-align: center;"><h2>Homepage</h2></div>
-
 <form name="mainButtonForm">
     <table align="center">
         <tr>

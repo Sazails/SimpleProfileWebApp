@@ -2,6 +2,13 @@
 <html>
 <head>
     <title>Registration</title>
+
+    <script type="text/javascript">
+        function openPage(pageName){
+            window.location.href = pageName;
+        }
+    </script>
+
     <script>
         function validate(){
             var email = document.registerForm.email.value;
@@ -26,6 +33,13 @@
     </script>
 </head>
 <body>
+<tr>
+    <td>
+        <input type="button" value="Home" name="logInButton"
+               onclick="openPage('home.jsp')"/>
+    </td>
+</tr>
+
 <div style="text-align: center;"><h2>Sign Up</h2></div>
 
 <form name="registerForm" action="<%= request.getContextPath() %>/registerServlet" method="post">

@@ -3,6 +3,7 @@ package controller;
 import dao.UserDAOImpl;
 import model.User;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +18,6 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("TESTING");
         String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -34,12 +34,12 @@ public class RegisterServlet extends HttpServlet {
         user.setUsername(username);
         user.setPassword(password);
 
-        UserDAOImpl userDAO = new UserDAOImpl();
-
-        boolean userRegistered = userDAO.registerUser(user);
+        boolean userRegistered = new UserDAOImpl().registerUser(user);
 
         if(userRegistered){
-            request.getRequestDispatcher("/home.jsp").forward(request,response);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/profile.jsp");
+            request.setAttribute("userEmail", email);
+            dispatcher.forward(request, response);
         }else{
             request.setAttribute("errorMessage", "Failed to register user. Please try again.");
             request.getRequestDispatcher("/register.jsp").forward(request,response);

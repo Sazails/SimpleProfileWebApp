@@ -2,6 +2,9 @@
 
 The idea for this project is to create a simple profile based web application.
 
+Servlet: apache-tomcat-9.0.31
+Database: postgresql-42.2.5
+
 TODO:
 * Login:
     + ~~Check if user exists.~~

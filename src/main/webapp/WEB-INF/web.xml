@@ -3,9 +3,14 @@
 <web-app>
   <display-name>Home</display-name>
 
+
   <welcome-file-list>
     <welcome-file>home.jsp</welcome-file>
+    <welcome-file>login.jsp</welcome-file>
+    <welcome-file>register.jsp</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+
 
   <servlet>
     <servlet-name>RegisterServlet</servlet-name>
@@ -17,7 +22,7 @@
     <url-pattern>/RegisterServlet</url-pattern>
   </servlet-mapping>
 
-  <!--<servlet>
+  <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>controller.LoginServlet</servlet-class>
   </servlet>
@@ -25,5 +30,5 @@
   <servlet-mapping>
     <servlet-name>LoginServlet</servlet-name>
     <url-pattern>/LoginServlet</url-pattern>
-  </servlet-mapping>-->
+  </servlet-mapping>
 </web-app>

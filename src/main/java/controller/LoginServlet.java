@@ -19,6 +19,24 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        if(email.equals("") || password.equals("")){
+            request.setAttribute("errorMessage", "Missing information.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        if(!email.contains("@")){
+            request.setAttribute("errorMessage", "Enter a valid email.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        if(password.length() < 6){
+            request.setAttribute("errorMessage", "Password must contain at least six characters.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
         boolean loginStatus = new LoginDAOImpl().validate(email, password);
 
         if(loginStatus){

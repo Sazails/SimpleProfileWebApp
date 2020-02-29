@@ -23,6 +23,30 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String passwordConfirm = request.getParameter("passwordConfirm");
 
+        if(email.equals("") || username.equals("") || password.equals("") || passwordConfirm.equals("")){
+            request.setAttribute("errorMessage", "Missing information.");
+            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            return;
+        }
+
+        if(!email.contains("@")){
+            request.setAttribute("errorMessage", "Enter a valid email.");
+            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            return;
+        }
+
+        if(username.length() < 3){
+            request.setAttribute("errorMessage", "Username must contain at least three characters.");
+            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            return;
+        }
+
+        if(password.length() < 6){
+            request.setAttribute("errorMessage", "Password must contain at least six characters.");
+            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            return;
+        }
+
         if(!password.equals(passwordConfirm)){
             request.setAttribute("errorMessage", "Passwords do not match, please check and try again.");
             request.getRequestDispatcher("/register.jsp").forward(request, response);

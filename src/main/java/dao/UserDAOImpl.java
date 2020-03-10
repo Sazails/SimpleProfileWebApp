@@ -4,6 +4,7 @@ import model.User;
 import util.DatabaseUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAOImpl implements UserDAO{
@@ -37,16 +38,48 @@ public class UserDAOImpl implements UserDAO{
     }
 
     @Override
+    public User getUserByUsername(String username) {
+        try{
+            Connection connection = DatabaseUtil.createConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM Users WHERE user_username=?"
+            );
+
+            preparedStatement.setString(1, username);
+            int userRowID = preparedStatement.executeQuery().getRow();
+            System.out.println(userRowID);
+
+            // By default rows in the database start with 1, if we get no row id then it will stay 0 (false)
+//            if(userRowID == 0) return new User();
+
+//            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+//            return user;
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public boolean userExists(String username) {
         try{
             Connection connection = DatabaseUtil.createConnection();
-
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM Users user_username=?"
+                    "SELECT * FROM Users WHERE user_username=?"
             );
             preparedStatement.setString(1, username);
 
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(!resultSet.next()){
+                System.out.println("User with username " + "'" + username + "' not found.");
+                return false;
+            }
+
             connection.close();
+            System.out.println("User with username " + "'" + username + "' exists.");
+            return true;
         }catch (SQLException ex){
             ex.printStackTrace();
         }

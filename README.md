@@ -27,7 +27,10 @@ DONE:
     + Check if user exists.
 
 * Register:
-    + Can create an account.
+    + Check if details are correct.
+    + Check if username does not exist.
+    + Add user to the user database.
 
-* Profile options to add:
+* Profile:
     + Display logged in email.
+    + Method to check if username exists. (Needs to be added to the front-end on profile page)

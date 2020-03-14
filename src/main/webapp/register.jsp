@@ -42,7 +42,6 @@
 
 <div style="text-align: center;"><h2>Sign Up</h2></div>
 
-<%--<form name="registerForm" action="<%= request.getContextPath() %>/registerServlet" method="post">--%>
 <form name="registerForm" action="<%= request.getContextPath() %>/registerServlet" method="post">
     <table align="center">
         <tr>

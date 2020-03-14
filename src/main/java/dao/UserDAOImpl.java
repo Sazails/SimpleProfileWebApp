@@ -44,18 +44,41 @@ public class UserDAOImpl implements UserDAO{
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT * FROM Users WHERE user_username=?"
             );
-
             preparedStatement.setString(1, username);
-            int userRowID = preparedStatement.executeQuery().getRow();
-            System.out.println(userRowID);
 
-            // By default rows in the database start with 1, if we get no row id then it will stay 0 (false)
-//            if(userRowID == 0) return new User();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            User user = new User(
+                    resultSet.getString(2),
+                    resultSet.getString(1),
+                    resultSet.getString(3)
+            );
 
-//            ResultSet resultSet = preparedStatement.executeQuery();
+            return user;
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
+    @Override
+    public User getUserByEmail(String email) {
+        try{
+            Connection connection = DatabaseUtil.createConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM Users WHERE user_email=?"
+            );
+            preparedStatement.setString(1, email);
 
-//            return user;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            User user = new User(
+                    resultSet.getString(2),
+                    resultSet.getString(1),
+                    resultSet.getString(3)
+            );
+            return user;
         }catch (SQLException ex){
             ex.printStackTrace();
         }

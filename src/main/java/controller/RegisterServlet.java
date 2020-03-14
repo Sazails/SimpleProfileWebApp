@@ -53,6 +53,18 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+        try{
+            // Check if same email does not exist in the database as only one type of it is allowed by the database (unique)
+            User user = new UserDAOImpl().getUserByEmail(email);
+            if(user.getEmail() != ""){
+                request.setAttribute("errorMessage", "Failed to register user. Email already exists.");
+                request.getRequestDispatcher("/register.jsp").forward(request,response);
+                return;
+            }
+        }catch (NullPointerException ex){
+            ex.printStackTrace();
+        }
+
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
@@ -63,6 +75,7 @@ public class RegisterServlet extends HttpServlet {
         if(userRegistered){
             RequestDispatcher dispatcher = request.getRequestDispatcher("/profile.jsp");
             request.setAttribute("userEmail", email);
+            request.setAttribute("userUsername", username);
             dispatcher.forward(request, response);
         }else{
             request.setAttribute("errorMessage", "Failed to register user. Please try again.");

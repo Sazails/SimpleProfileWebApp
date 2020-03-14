@@ -12,7 +12,7 @@ TODO:
 
 * Register:
     + Add check for username (has letters, maybe few numbers).
-    + Add check for email (has @ symbol).
+    + ~~Add check for email (has @ symbol).~~
     + Add check for password (has letters, maybe few numbers).
 
 * Profile options to add:
@@ -20,17 +20,20 @@ TODO:
     + Remove friends.
     + Delete your account.
     + Modify your account details.
-    + Receive updates to your email.
+    + Send message to your email (updates/news).
 
 DONE:
 * Login:
     + Check if user exists.
 
 * Register:
-    + Check if details are correct.
+    + Check if details are correct (have minimum character length requirements and @ symbol for email).
     + Check if username does not exist.
+    + Check if email does not exist.
     + Add user to the user database.
 
 * Profile:
     + Display logged in email.
+    + Display logged in username.
     + Method to check if username exists. (Needs to be added to the front-end on profile page)
+    + Method to check if email exists. (Needs to be added to the front-end on profile page)

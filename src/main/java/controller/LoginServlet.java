@@ -1,6 +1,8 @@
 package controller;
 
 import dao.LoginDAOImpl;
+import dao.UserDAOImpl;
+import model.User;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -42,6 +44,9 @@ public class LoginServlet extends HttpServlet {
         if(loginStatus){
             RequestDispatcher dispatcher = request.getRequestDispatcher("/profile.jsp");
             request.setAttribute("userEmail", email);
+
+            User user = new UserDAOImpl().getUserByEmail(email);
+            request.setAttribute("userUsername", user.getUsername());
             dispatcher.forward(request, response);
         }else{
             request.setAttribute("errorMessage", "Failed to login user. Please try again.");

@@ -1,6 +1,7 @@
 package tests;
 
 import dao.UserDAOImpl;
+import model.User;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,7 +11,13 @@ public class Main {
         System.out.println(userDAO.userExists("username"));
         */
 
-        UserDAOImpl userDAO = new UserDAOImpl();
-        userDAO.getUserByUsername("username");
+        // Get user if exists test
+        /*UserDAOImpl userDAO = new UserDAOImpl();
+        try{
+            User user = userDAO.getUserByUsername("username");
+            System.out.println(user.toString());
+        }catch (NullPointerException ex){
+            ex.printStackTrace();
+        }*/
     }
 }

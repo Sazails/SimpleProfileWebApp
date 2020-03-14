@@ -25,6 +25,22 @@
             Email: <%=request.getAttribute("userEmail")%>
         </td>
     </tr>
+    <tr>
+        <td>
+            Username: <%=request.getAttribute("userUsername")%>
+        </td>
+    </tr>
 </table>
+
+<form name="friendFinder" action="">
+    <table align="center">
+        <tr>
+            <td>
+
+            </td>
+        </tr>
+    </table>
+</form>
+
 </body>
 </html>

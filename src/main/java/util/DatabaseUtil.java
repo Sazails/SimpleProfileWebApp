@@ -2,6 +2,8 @@ package util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DatabaseUtil {
     public static Connection createConnection(){
@@ -24,5 +26,9 @@ public class DatabaseUtil {
         }
 
         return connection;
+    }
+
+    public static PreparedStatement createPreparedStatement(String statement) throws SQLException {
+        return createConnection().prepareStatement(statement);
     }
 }

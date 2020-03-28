@@ -1,21 +1,22 @@
 package dao;
 
 import model.User;
-import util.DatabaseUtil;
+import util.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDAOImpl implements UserDAO{
+public class UserDAOImpl implements UserDAO {
+    // Add new user to the users database
     @Override
-    public boolean registerUser(User user){
+    public boolean registerUser(User user) {
         String email = user.getEmail();
         String username = user.getUsername();
         String password = user.getPassword();
 
-        try{
-            Connection connection = DatabaseUtil.createConnection();
+        try {
+            Connection connection = ConnectionUtil.createTempConnection();
 
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "INSERT INTO users (user_username, user_email, user_password) VALUES (?, ?, ?)"
@@ -26,36 +27,48 @@ public class UserDAOImpl implements UserDAO{
 
             int state = preparedStatement.executeUpdate();
 
+            preparedStatement.close();
             connection.close();
 
-            if(state != 0){
+            if (state != 0) {
                 return true; // Registration went with no errors
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return false; // Something went wrong with the registration
     }
 
-    @Override
-    public User getUserByUsername(String username) {
+    // I currently don't know how to accept multiple field changes for the preparedStatement so I only use one input here
+    private User getUser(String singlePreparedStatement, int fieldID, String input) throws SQLException {
         try{
-            Connection connection = DatabaseUtil.createConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM Users WHERE user_username=?"
-            );
-            preparedStatement.setString(1, username);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            Connection connection = ConnectionUtil.createTempConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(singlePreparedStatement);
+            preparedStatement.setString(fieldID, input);
+            ResultSet set = preparedStatement.executeQuery();
+            set.next();
             User user = new User(
-                    resultSet.getString(2),
-                    resultSet.getString(1),
-                    resultSet.getString(3)
+                    set.getString(2),
+                    set.getString(1),
+                    set.getString(3)
             );
+
+            set.close();
+            preparedStatement.close();
+            connection.close();
 
             return user;
-        }catch (SQLException ex){
+        }catch (SQLException | ClassNotFoundException ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        try {
+            return getUser("SELECT * FROM Users WHERE user_name=?", 1, username);
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return null;
@@ -63,49 +76,77 @@ public class UserDAOImpl implements UserDAO{
 
     @Override
     public User getUserByEmail(String email) {
-        try{
-            Connection connection = DatabaseUtil.createConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM Users WHERE user_email=?"
-            );
-            preparedStatement.setString(1, email);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-
-            User user = new User(
-                    resultSet.getString(2),
-                    resultSet.getString(1),
-                    resultSet.getString(3)
-            );
-            return user;
-        }catch (SQLException ex){
+        try {
+            return getUser("SELECT * FROM Users WHERE user_email=?", 1, email);
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public boolean userExists(String username) {
+    public boolean existsUsername(String username) {
         try{
-            Connection connection = DatabaseUtil.createConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM Users WHERE user_username=?"
-            );
-            preparedStatement.setString(1, username);
+            if(getUserByUsername(username) == null){
+                System.out.println("User with username " + username + " not found.");
+                return false;
+            }else{
+                System.out.println("User with username " + username + " found.");
+                return true;
+            }
+        }catch (NullPointerException ex){
+            ex.printStackTrace();
+            System.out.println("Couldn't get user by username " + username);
+            return false;
+        }
+    }
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if(!resultSet.next()){
-                System.out.println("User with username " + "'" + username + "' not found.");
+    @Override
+    public boolean existsEmail(String email) {
+        try{
+            if(getUserByEmail(email) == null){
+                System.out.println("User with email " + email + " not found.");
+                return false;
+            }else{
+                System.out.println("User with email " + email + " found.");
+                return true;
+            }
+        }catch (NullPointerException ex){
+            ex.printStackTrace();
+            System.out.println("Couldn't get user by email " + email);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateUsername(String currentUsername, String newUsername) {
+        if (existsUsername(currentUsername)) {
+            if (!existsUsername(newUsername)) {
+                try {
+                    Connection connection = ConnectionUtil.createTempConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            "UPDATE TABLE users SET user_username=? WHERE user_username=?"
+                    );
+                    preparedStatement.setString(1, newUsername);
+                    preparedStatement.setString(2, currentUsername);
+                    preparedStatement.executeUpdate();
+
+                    preparedStatement.close();
+                    connection.close();
+
+                    System.out.println("User with username: " + currentUsername + " has been replaced with a new username: " + newUsername);
+                    return true;
+                } catch (SQLException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                    return false;
+                }
+            } else {
+                System.out.println("New username: " + newUsername + " already exists, please choose another one.");
                 return false;
             }
-
-            connection.close();
-            System.out.println("User with username " + "'" + username + "' exists.");
-            return true;
-        }catch (SQLException ex){
-            ex.printStackTrace();
+        } else {
+            System.out.println("Username: " + currentUsername + " was not found within the database.");
+            return false;
         }
-        return false;
     }
 }

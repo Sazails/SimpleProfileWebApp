@@ -10,11 +10,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static util.HttpUtil.setRequestAttribute;
 
 @WebServlet("/loginServlet")
 public class LoginServlet extends HttpServlet {
-    public LoginServlet(){}
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -22,20 +24,23 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         if(email.equals("") || password.equals("")){
-            request.setAttribute("errorMessage", "Missing information.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Missing information.",
+                    "/login.jsp");
             return;
         }
 
         if(!email.contains("@")){
-            request.setAttribute("errorMessage", "Enter a valid email.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Enter a valid email.",
+                    "/login.jsp");
             return;
         }
 
         if(password.length() < 6){
-            request.setAttribute("errorMessage", "Password must contain at least six characters.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Password must contain at least six characters.",
+                    "/login.jsp");
             return;
         }
 
@@ -43,14 +48,16 @@ public class LoginServlet extends HttpServlet {
 
         if(loginStatus){
             RequestDispatcher dispatcher = request.getRequestDispatcher("/profile.jsp");
-            request.setAttribute("userEmail", email);
+            HttpSession session = request.getSession();
+            session.setAttribute("userEmail", email);
 
             User user = new UserDAOImpl().getUserByEmail(email);
-            request.setAttribute("userUsername", user.getUsername());
+            session.setAttribute("userUsername", user.getUsername());
             dispatcher.forward(request, response);
         }else{
-            request.setAttribute("errorMessage", "Failed to login user. Please try again.");
-            request.getRequestDispatcher("/login.jsp").forward(request,response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Failed to login user. Please try again.",
+                    "/login.jsp");
         }
     }
 }

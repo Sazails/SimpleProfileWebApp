@@ -1,6 +1,6 @@
 package dao;
 
-import util.DatabaseUtil;
+import util.ConnectionUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,22 +10,24 @@ public class LoginDAOImpl implements LoginDAO {
     @Override
     public boolean validate(String email, String password) {
         try{
-            Connection connection = DatabaseUtil.createConnection();
+            Connection connection = ConnectionUtil.createTempConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT * FROM Users WHERE user_email=? AND user_password=?"
             );
-
             preparedStatement.setString(1, email);
             preparedStatement.setString(2, password);
 
-            ResultSet rs = preparedStatement.executeQuery();
-            connection.close();
+            ResultSet set = preparedStatement.executeQuery();
+            boolean exists = set.next();
 
-            return rs.next(); // Return true if user does exist.
+            set.close();
+            preparedStatement.close();
+            connection.close();
+            return exists; // Return true if user does exist.
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return false; // Something went wrong, just return false.
+        return false;
     }
 }

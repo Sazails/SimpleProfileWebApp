@@ -22,17 +22,22 @@
 <table>
     <tr>
         <td>
-            Email: <%=request.getAttribute("userEmail")%>
+            Email: <%=session.getAttribute("userEmail")%>
         </td>
     </tr>
     <tr>
         <td>
-            Username: <%=request.getAttribute("userUsername")%>
+            Username: <%=session.getAttribute("userUsername")%>
         </td>
     </tr>
 </table>
 
-<form name="friendFinder" action="">
+<form name="usernameChangeForm" action="<%= request.getContextPath() %>/profileServlet" method="post">
+    <input type="text" name="usernameChangeInput" value="Username"/>
+    <input type="submit" name="usernameChangeButton" value="Change Username"/>
+</form>
+
+<%--<form name="friendFinder" action="">
     <table align="center">
         <tr>
             <td>
@@ -40,7 +45,7 @@
             </td>
         </tr>
     </table>
-</form>
+</form>--%>
 
 </body>
 </html>

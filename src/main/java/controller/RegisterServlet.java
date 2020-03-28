@@ -9,12 +9,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static util.HttpUtil.setRequestAttribute;
 
 @WebServlet("/registerServlet")
 public class RegisterServlet extends HttpServlet {
-
-    public RegisterServlet(){}
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -23,63 +24,83 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String passwordConfirm = request.getParameter("passwordConfirm");
 
+        // Simple checks to see if the minimum requirements are met.
         if(email.equals("") || username.equals("") || password.equals("") || passwordConfirm.equals("")){
-            request.setAttribute("errorMessage", "Missing information.");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Missing information.",
+                    "/register.jsp");
             return;
         }
 
         if(!email.contains("@")){
-            request.setAttribute("errorMessage", "Enter a valid email.");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Enter a valid email.",
+                    "/register.jsp");
             return;
         }
 
         if(username.length() < 3){
-            request.setAttribute("errorMessage", "Username must contain at least three characters.");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Username must contain at least three characters.",
+                    "/register.jsp");
             return;
         }
 
         if(password.length() < 6){
-            request.setAttribute("errorMessage", "Password must contain at least six characters.");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Password must contain at least six characters.",
+                    "/register.jsp");
             return;
         }
 
         if(!password.equals(passwordConfirm)){
-            request.setAttribute("errorMessage", "Passwords do not match, please check and try again.");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Passwords do not match, please check and try again.",
+                    "/register.jsp");
             return;
         }
 
+        // Check to see if user email or username is not in use.
         try{
             // Check if same email does not exist in the database as only one type of it is allowed by the database (unique)
             User user = new UserDAOImpl().getUserByEmail(email);
             if(user.getEmail() != ""){
-                request.setAttribute("errorMessage", "Failed to register user. Email already exists.");
-                request.getRequestDispatcher("/register.jsp").forward(request,response);
+                setRequestAttribute(request, response,
+                        "errorMessage", "Failed to register user. Email already exists.",
+                        "/register.jsp");
+                return;
+            }
+
+            if(user.getUsername() != ""){
+                setRequestAttribute(request, response,
+                        "errorMessage", "Failed to register user. Username already exists.",
+                        "/register.jsp");
                 return;
             }
         }catch (NullPointerException ex){
             ex.printStackTrace();
         }
 
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPassword(password);
+        // Set the new user details for the user account creation and return registered status
+        boolean userRegistered = new UserDAOImpl().registerUser(
+                new User(
+                        email,
+                        username,
+                        password
+                )
+        );
 
-        boolean userRegistered = new UserDAOImpl().registerUser(user);
-
+        // Handle page loading and error message for the returned state of userRegistered.
         if(userRegistered){
             RequestDispatcher dispatcher = request.getRequestDispatcher("/profile.jsp");
-            request.setAttribute("userEmail", email);
-            request.setAttribute("userUsername", username);
+            HttpSession session = request.getSession();
+            session.setAttribute("userEmail", email);
+            session.setAttribute("userUsername", username);
             dispatcher.forward(request, response);
         }else{
-            request.setAttribute("errorMessage", "Failed to register user. Please try again.");
-            request.getRequestDispatcher("/register.jsp").forward(request,response);
+            setRequestAttribute(request, response,
+                    "errorMessage", "Failed to register user. Please try again.",
+                    "/register.jsp");
         }
     }
 }

@@ -1,5 +1,6 @@
 package tests;
 
+import dao.LoginDAOImpl;
 import dao.UserDAOImpl;
 import model.User;
 
@@ -19,5 +20,8 @@ public class Main {
         }catch (NullPointerException ex){
             ex.printStackTrace();
         }*/
+
+//        LoginDAOImpl loginDAO = new LoginDAOImpl();
+//        loginDAO.validate("bobopboop@gmail.com", "1231231");
     }
 }
